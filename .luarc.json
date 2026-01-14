@@ -1,0 +1,12 @@
+{
+    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/refs/heads/master/setting/schema.json",
+    "runtime.version": "LuaJIT",
+    "diagnostics.disable": [
+        "lowercase-global"
+    ],
+    "hint.enable": true,
+    "semantic.enable": false,
+    "workspace.library": [
+        "/Users/subwave/dev/ext/love/"
+    ]
+}
