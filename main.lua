@@ -43,10 +43,10 @@ function love.draw()
         if Input:isPressed("INTERACT") then
             color = Colors.SteamLords.eggplant_purple
         else
-            color = Colors.SteamLords.mahogany
+            color = Colors.White
         end
         love.graphics.setColor(color)
-        love.graphics.circle("fill", pos.x, pos.y, 30)
+        Draw:sprite("circle", pos.x, pos.y)
     end)
 
     Draw:draw("ui", 2, function()

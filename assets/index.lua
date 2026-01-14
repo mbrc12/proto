@@ -1,17 +1,19 @@
-Assets.fontName = "capitalhill"
+Assets.fontName = "capitalhill.ttf"
 
 ---@enum (key) Assets.Textures
 Assets.textures = {
+    ["ss"] = { name = "ss.png" },
 }
 
 ---@enum (key) Assets.Sprites
 Assets.sprites = {
+    ["circle"] = { texture = "ss", tx = 0, ty = 0, tw = 32, th = 32 },
 }
 
 ---@enum (key) Assets.Shaders
 Assets.shaders = {
-    default = { name = "default" },
-    ninepatch = { name = "ninepatch" },
+    default = { name = "default.glsl" },
+    ninepatch = { name = "ninepatch.glsl" },
 }
 
 -- Many sounds from https://firahfabe.itch.io/chiptune-8-bit-sfx-pack

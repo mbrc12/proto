@@ -77,7 +77,6 @@ end
 ---@param th? number optional, texture quad height
 ---@param scale? number
 function Draw:simple(textureOrName, x, y, r, flip, center, tx, ty, tw, th, scale)
-    ---@type love.Image
     local texture = textureOrName
 
     scale = scale or 1
@@ -85,6 +84,8 @@ function Draw:simple(textureOrName, x, y, r, flip, center, tx, ty, tw, th, scale
     if type(textureOrName) == "string" then
         texture = Assets.texture(textureOrName)
     end
+
+    ---@cast texture love.Image
 
     r = r or 0
     r = math.rad(r % 360)
@@ -110,7 +111,7 @@ function Draw:simple(textureOrName, x, y, r, flip, center, tx, ty, tw, th, scale
 end
 
 ---@class SpriteConfig
----@field asset Assets.Textures
+---@field texture Assets.Textures
 ---@field tx number
 ---@field ty number
 ---@field tw? number
@@ -137,7 +138,7 @@ function Draw:sprite(spriteCfg, x, y, r, flip)
     Util.defaults(spriteCfg, spriteConfigDefaults)
 
     self:simple(
-        spriteCfg.asset,
+        spriteCfg.texture,
         x,
         y,
         r,

@@ -1,22 +1,19 @@
 local Loaders = {}
 
 local TEXTURES_ROOT = "assets/textures/"
-local TEXTURE_EXT = ".png"
 
 local SHADERS_ROOT = "assets/shaders/"
-local SHADER_EXT = ".glsl"
-local COMMON_SHADER_NAME = "common"
+local COMMON_SHADER_NAME = "common.glsl"
 
 local SFXS_ROOT = "assets/sfx/"
 local MUSIC_ROOT = "assets/music/"
 
 local FONTS_ROOT = "assets/fonts/"
-local FONT_EXT = ".ttf"
 
 ---@param name string
 ---@return love.Image
 function Loaders.loadTexture(name)
-    local path = TEXTURES_ROOT .. name .. TEXTURE_EXT
+    local path = TEXTURES_ROOT .. name
     local image = love.graphics.newImage(path)
     Log("Loaded texture: " .. path)
 
@@ -27,11 +24,11 @@ end
 ---@return love.Shader
 function Loaders.loadShader(name)
     Log("Loading shader: " .. name)
-    local common = love.filesystem.read(SHADERS_ROOT .. COMMON_SHADER_NAME .. SHADER_EXT)
+    local common = love.filesystem.read(SHADERS_ROOT .. COMMON_SHADER_NAME)
 
     common = "\n" .. common .. "\n"
 
-    local path = SHADERS_ROOT .. name .. SHADER_EXT
+    local path = SHADERS_ROOT .. name
     local shader = love.filesystem.read(path)
     local full_shader = string.gsub(shader, "#COMMON", common)
     local valid, message = love.graphics.validateShader(true, full_shader)
@@ -67,7 +64,7 @@ end
 ---@param size number
 ---@return love.Font
 function Loaders.loadFont(name, size)
-    local path = FONTS_ROOT .. name .. FONT_EXT
+    local path = FONTS_ROOT .. name
     local font = love.graphics.newFont(path, size)
     Log("Loaded font: " .. path)
     font:setFilter("nearest", "nearest")
