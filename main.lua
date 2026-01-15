@@ -1,8 +1,25 @@
 require("constants")
 require("lib._init")
 require("assets.index")
-
 local manual_gc = require("deps.manual_gc")
+
+local Game = require("game._init")
+
+Registry = {
+    ---@type Screen
+    screen = nil,
+}
+
+---@param newScreen Screen
+function _G.switchScreen(newScreen)
+    if Registry.screen and Registry.screen.leave then
+        Registry.screen:leave()
+    end
+    Registry.screen = newScreen
+    if Registry.screen.enter then
+        Registry.screen:enter()
+    end
+end
 
 function love.load()
     love.joystick.loadGamepadMappings("assets/extra/mappings.txt")
@@ -17,48 +34,23 @@ function love.load()
     Input:init()
     Mouse:init()
     Draw:init()
-end
 
-pos = Vec2.new()
+    switchScreen(Game.new())
+end
 
 function love.update(dt)
     Input:update(dt)
     Mouse:update()
 
-    local dir = Input:direction()
-    pos = pos + dir * 200 * dt
+    Registry.screen:update(dt)
 
     manual_gc(1e-3, 64)
 end
 
-
 function love.draw()
     Draw:begin()
 
-    Draw:draw("main", 1, function()
-        local color
-        if Input:isJustPressed("INTERACT") then
-            Sounds:sfx("bong")
-        end
-        if Input:isPressed("INTERACT") then
-            color = Colors.SteamLords.eggplant_purple
-        else
-            color = Colors.White
-        end
-        love.graphics.setColor(color)
-        Draw:sprite("bullet", pos.x, pos.y)
-    end)
-
-    Draw:draw("ui", 2, function()
-        love.graphics.setColor(Colors.White)
-
-        local message = string.format("%s, %d fps, %.1fM",
-            Input:debugString(),
-            love.timer.getFPS(),
-            collectgarbage("count")/1024
-        )
-        Draw:rightAlignedText(message, -1, 1)
-    end)
+    Registry.screen:draw()
 
     Draw:finish()
 
@@ -80,3 +72,6 @@ function love.draw()
     manual_gc(1e-3, 64)
 end
 
+function love.quit()
+    Registry.screen:leave()
+end
