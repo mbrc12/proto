@@ -1,4 +1,5 @@
-Assets.fontName = "capitalhill.ttf"
+-- Assets.fontName = "capitalhill.ttf"
+Assets.fontName = "m5x7.ttf"
 
 ---@enum (key) Assets.Textures
 Assets.textures = {
