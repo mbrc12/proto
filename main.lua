@@ -46,13 +46,14 @@ function love.draw()
             color = Colors.White
         end
         love.graphics.setColor(color)
-        Draw:sprite("circle", pos.x, pos.y)
+        Draw:sprite("bullet", pos.x, pos.y)
     end)
 
     Draw:draw("ui", 2, function()
         love.graphics.setColor(Colors.White)
 
-        local message = string.format("f:%d, m:%.1fM",
+        local message = string.format("%s, %d fps, %.1fM",
+            Input:debugString(),
             love.timer.getFPS(),
             collectgarbage("count")/1024
         )

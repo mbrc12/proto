@@ -5,9 +5,23 @@ Assets.textures = {
     ["ss"] = { name = "ss.png" },
 }
 
+local function scaled(x, y, w, h)
+    w = w or 1
+    h = h or 1
+    x = x - 1
+    y = y - 1
+    x = x * CELL_SIZE
+    y = y * CELL_SIZE
+    w = w * CELL_SIZE
+    h = h * CELL_SIZE
+    return { texture = "ss", tx = x, ty = y, tw = w, th = h }
+end
+
 ---@enum (key) Assets.Sprites
 Assets.sprites = {
-    ["circle"] = { texture = "ss", tx = 0, ty = 0, tw = 32, th = 32 },
+    ["player"] = scaled(1, 1),
+    ["bullet"] = scaled(2, 1),
+    ["box"] = scaled(3, 1),
 }
 
 ---@enum (key) Assets.Shaders
