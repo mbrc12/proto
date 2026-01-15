@@ -1,6 +1,7 @@
 _G.Util = {}
 
 local json = require("deps.dkjson")
+table.unpack = unpack or table.unpack
 
 Util.id = 100
 function Util.uniqueId()
