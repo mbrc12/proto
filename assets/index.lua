@@ -52,9 +52,15 @@ Assets.animations = {
 
 ---@enum (key) Assets.Ninepatches
 Assets.ninepatches = {
-    ["wall"] = {
+    ["elevator"] = {
         texture = "ss",
         region = { x = 16, y = 16, w = 16, h = 16 },
+        padding = { left = 1, right = 1, top = 1, bottom = 1 }
+    },
+    ["wall"] = {
+        texture = "ss",
+        tiledX = true,
+        region = { x = 32, y = 16, w = 16, h = 16 },
         padding = { left = 1, right = 1, top = 1, bottom = 1 }
     }
 }

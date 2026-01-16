@@ -79,37 +79,49 @@ local defaultBodySettings = {
     mask = {},
 }
 
+---@alias ShapeFunction fun(love.physics.Body):love.physics.Shape
+
 ---@param item any
----@param shapeFn fun(love.physics.Body):love.physics.Shape
 ---@param cfg BodyConfig
----@param shape love.physics.Shape
-function Physics:_addShape(item, shapeFn, cfg, shape)
+---@param shapeFns ShapeFunction[]
+function Physics:addBody(item, cfg, shapeFns)
     local body = love.physics.newBody(self.world, 0, 0, cfg.type or defaultBodySettings.type)
     body:setUserData(item)
-    local shape = shapeFn(body)
-    shape:setCategory(cfg.category or defaultBodySettings.category)
-    shape:setMask(table.unpack(cfg.mask or defaultBodySettings.mask or {}))
+    for _, shapeFn in pairs(shapeFns) do
+        local shape = shapeFn(body)
+        shape:setCategory(cfg.category or defaultBodySettings.category)
+        shape:setMask(table.unpack(cfg.mask or defaultBodySettings.mask or {}))
+    end
     self.entities[item] = { body = body }
 end
 
----@param item any
----@param cfg BodyConfig
 ---@param w number
 ---@param h number
-function Physics:addRect(item, cfg, w, h)
-    self:_addShape(item, function(body)
-        return love.physics.newRectangleShape(body, w, h)
-    end, cfg)
+---@param x? number
+---@param y? number
+---@return ShapeFunction
+function Physics.rect(w, h, x, y)
+    x = x or 0
+    y = y or 0
+    return function(body)
+        local shape = love.physics.newRectangleShape(body, x, y, w, h)
+        return shape
+    end
 end
 
----@param item any
----@param cfg BodyConfig
 ---@param radius number
-function Physics:addCircle(item, cfg, radius)
-    self:_addShape(item, function(body)
-        return love.physics.newCircleShape(body, radius)
-    end, cfg)
+---@param x? number
+---@param y? number
+---@return ShapeFunction
+function Physics.circle(radius, x, y)
+    x = x or 0
+    y = y or 0
+    return function(body)
+        local shape = love.physics.newCircleShape(body, x, y, radius)
+        return shape
+    end
 end
+
 
 ---@param item any
 function Physics:remove(item)
@@ -171,6 +183,8 @@ function Physics:rayCast(x1, y1, x2, y2, callback)
         local continue = callback(item, x, y, xn, yn, fraction)
         if continue == false then
             return 0
+        else
+            return 1
         end
     end)
 end

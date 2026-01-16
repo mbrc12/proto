@@ -13,7 +13,9 @@ _G.Ninepatch = {}
 ---@param w number
 ---@param h number
 ---@param r? number rotation in degrees
-function Ninepatch:draw(cfg, x, y, w, h, r)
+---@param offsetX? number offset for tiling
+---@param offsetY? number offset for tiling
+function Ninepatch:draw(cfg, x, y, w, h, r, offsetX, offsetY)
     if type(cfg) == "string" then
         cfg = Assets.ninepatches[cfg]
     end
@@ -47,6 +49,8 @@ function Ninepatch:draw(cfg, x, y, w, h, r)
         texSize = { iw, ih },
         tiledX = cfg.tiledX and 1 or 0,
         tiledY = cfg.tiledY and 1 or 0,
+        offsetX = offsetX or 0,
+        offsetY = offsetY or 0,
     }, function()
         local quad = love.graphics.newQuad(tx, ty, tw, th, iw, ih)
         love.graphics.draw(img, quad, x, y, r, scalex, scaley)

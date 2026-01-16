@@ -86,3 +86,8 @@ float Noise2D(vec2 coord, float wavelength)
    return interpolatedNoise3D(coord.x/wavelength, coord.y/wavelength, 0.0);
 }
 
+float positiveMod(float a, float b) {
+    float z = mod(a, b);
+    return z < 0.0 ? z + b : z;
+}
+
