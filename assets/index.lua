@@ -35,7 +35,7 @@ Assets.shaders = {
 
 ---@enum (key) Assets.Sfxs
 Assets.sfxs = {
-    ["bong"] = { name = "bong.ogg" },
+    bong = { name = "bong.ogg" },
 }
 
 ---@enum (key) Assets.SfxGroups
@@ -52,4 +52,9 @@ Assets.animations = {
 
 ---@enum (key) Assets.Ninepatches
 Assets.ninepatches = {
+    ["wall"] = {
+        texture = "ss",
+        region = { x = 16, y = 16, w = 16, h = 16 },
+        padding = { left = 1, right = 1, top = 1, bottom = 1 }
+    }
 }

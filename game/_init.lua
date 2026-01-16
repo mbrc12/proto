@@ -14,6 +14,7 @@ function Game.new()
     self.physics = Physics.new(0, 0)
     self.player = {}
     self.wall = {}
+
     self.physics:addCircle(self.player, { type = "dynamic", category = 1 }, 6)
 
     self.physics:addRect(self.wall, { type = "static", category = 2 }, 200, 10)
@@ -52,7 +53,10 @@ function Game:draw()
         local x, y = self.physics:getPosition(self.player, true)
         Draw:sprite("player", x, y)
 
-        self.physics:draw()
+        local wx, wy = self.physics:getPosition(self.wall, true)
+        Ninepatch:draw("wall", wx - 100, wy - 5, 200, 10)
+
+        -- self.physics:draw()
     end)
 
     Draw:draw("ui", 2, function()

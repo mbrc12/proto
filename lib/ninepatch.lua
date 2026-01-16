@@ -1,10 +1,10 @@
 _G.Ninepatch = {}
 
 ---@class NinePatchConfig
----@field asset Assets.Textures
+---@field texture Assets.Textures
 ---@field tiledX? boolean
 ---@field tiledY? boolean
----@field texture? { x : number, y : number, w : number, h : number }
+---@field region? { x : number, y : number, w : number, h : number }
 ---@field padding { left : number, right : number, top : number, bottom : number }
 
 ---@param cfg NinePatchConfig | Assets.Ninepatches
@@ -21,15 +21,15 @@ function Ninepatch:draw(cfg, x, y, w, h, r)
     r = r or 0
     r = math.rad(r % 360)
 
-    local img = Assets.texture(cfg.asset)
+    local img = Assets.texture(cfg.texture)
     local iw, ih = img:getDimensions()
 
-    if not cfg.texture then
-        cfg.texture = { x = 0, y = 0, w = iw, h = ih }
+    if not cfg.region then
+        cfg.region = { x = 0, y = 0, w = iw, h = ih }
     end
 
-    local tw, th = cfg.texture.w, cfg.texture.h
-    local tx, ty = cfg.texture.x, cfg.texture.y
+    local tw, th = cfg.region.w, cfg.region.h
+    local tx, ty = cfg.region.x, cfg.region.y
     local pl, pr = cfg.padding.left, cfg.padding.right
     local pt, pb = cfg.padding.top, cfg.padding.bottom
 
