@@ -88,6 +88,8 @@ function Game:draw()
         local wx, wy = self.physics:getPosition(self.wall, true)
         Ninepatch:draw("wall", wx - 100, wy - 5, 200, 10, nil, -love.timer.getTime() * 20, 0)
 
+        love.graphics.rectangle("line", -155, -85, 310, 170)
+
         -- self.physics:draw()
     end)
 
