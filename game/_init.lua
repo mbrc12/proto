@@ -14,14 +14,9 @@ function Game.new()
     self.physics = Physics.new(0, 0)
     self.player = {}
     self.wall = {}
-    self.physics:addRect(self.player, { type = "dynamic", category = 1 }, 10, 10)
-    -- self.physics:setCallback(self.player, function(other)
-    --     if other == self.wall then
-    --         self.grounded = true
-    --     end
-    -- end)
+    self.physics:addCircle(self.player, { type = "dynamic", category = 1 }, 6)
 
-    self.physics:addRect(self.wall, { type = "static", category = 2 }, 200, 5)
+    self.physics:addRect(self.wall, { type = "static", category = 2 }, 200, 10)
     self.physics:setPosition(self.wall, 0, 70)
 
     return self
