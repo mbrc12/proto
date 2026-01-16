@@ -3,12 +3,17 @@
 ---@class PhysicsEntity
 ---@field body love.physics.Body
 
+---@alias CollisionCallback fun(other: any, nx: number, ny: number, x1: number, y1: number, x2: number, y2: number)
+
 ---@class Physics
 _G.Physics = {
     ---@type love.physics.World
     world = nil,
     ---@type table<any, PhysicsEntity>
-    entities = {}
+    entities = {},
+
+    ---@type table<any, CollisionCallback>
+    collisionCallbacks = {},
 }
 Physics.__index = Physics
 
@@ -18,11 +23,48 @@ function Physics.new(gx, gy)
     local self = setmetatable({}, Physics)
     self.world = love.physics.newWorld(gx or 0, gy or 0, true)
     self.entities = {}
+
+    local beginContact = function(a, b, col)
+        ---@cast col love.physics.Contact
+        local nx, ny = col:getNormal()
+        local x1, y1, x2, y2 = col:getPositions()
+        local itemA = a:getBody():getUserData()
+        local itemB = b:getBody():getUserData()
+        local callbackA = self.collisionCallbacks[itemA]
+        if callbackA then
+            callbackA(itemB, nx, ny, x1, y1, x2, y2)
+        end
+        local callbackB = self.collisionCallbacks[itemB]
+        if callbackB then
+            callbackB(itemA, -nx, -ny, x1, y1, x2, y2)
+        end
+    end
+
+    local endContact = function(a, b, ...)
+        -- Currently unused, but could be implemented similarly to beginContact
+    end
+
+    local preSolve = function(a, b, ...)
+        -- Currently unused
+    end
+
+    local postSolve = function(a, b, ...)
+        -- Currently unused
+    end
+
+    self.world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+
     return self
 end
 
 function Physics:update(dt)
     self.world:update(dt)
+end
+
+---@param item any
+---@param callback CollisionCallback
+function Physics:setCallback(item, callback)
+    self.collisionCallbacks[item] = callback
 end
 
 ---@class BodyConfig
@@ -35,20 +77,18 @@ local defaultBodySettings = {
     category = 1,
     ---@type number[]? do not collide with these categories
     mask = {},
-    ---@type boolean?
-    sensor = false,
 }
 
 ---@param item any
+---@param shapeFn fun(love.physics.Body):love.physics.Shape
 ---@param cfg BodyConfig
 ---@param shape love.physics.Shape
-function Physics:_addShape(item, cfg, shape)
+function Physics:_addShape(item, shapeFn, cfg, shape)
     local body = love.physics.newBody(self.world, 0, 0, cfg.type or defaultBodySettings.type)
     body:setUserData(item)
-    local fixture = love.physics.newFixture(body, shape, cfg.density or defaultBodySettings.density)
-    fixture:setCategory(cfg.category or defaultBodySettings.category)
-    fixture:setMask(table.unpack(cfg.mask or defaultBodySettings.mask or {}))
-    fixture:setSensor(cfg.sensor or defaultBodySettings.sensor or false)
+    local shape = shapeFn(body)
+    shape:setCategory(cfg.category or defaultBodySettings.category)
+    shape:setMask(table.unpack(cfg.mask or defaultBodySettings.mask or {}))
     self.entities[item] = { body = body }
 end
 
@@ -57,16 +97,18 @@ end
 ---@param w number
 ---@param h number
 function Physics:addRect(item, cfg, w, h)
-    local shape = love.physics.newRectangleShape(w, h)
-    self:_addShape(item, cfg, shape)
+    self:_addShape(item, function(body)
+        return love.physics.newRectangleShape(body, w, h)
+    end, cfg)
 end
 
 ---@param item any
 ---@param cfg BodyConfig
 ---@param radius number
 function Physics:addCircle(item, cfg, radius)
-    local shape = love.physics.newCircleShape(radius)
-    self:_addShape(item, cfg, shape)
+    self:_addShape(item, function(body)
+        return love.physics.newCircleShape(body, radius)
+    end, cfg)
 end
 
 ---@param item any
@@ -97,19 +139,56 @@ function Physics:setVelocity(item, vx, vy)
 end
 
 ---@param item any
+---@param rounded boolean|nil
 ---@return number, number
-function Physics:getPosition(item)
+function Physics:getPosition(item, rounded)
+    rounded = rounded or false
     local entity = self.entities[item]
     local x, y = entity.body:getPosition()
+    if rounded then
+        x = Util.round(x)
+        y = Util.round(y)
+    end
     return x, y
 end
+
+--- The callback is called for each fixture found in the ray cast.
+--- If the callback returns false, the ray cast is terminated.
+--- The callback parameters are:
+--- - item: the user data associated with the body hit
+--- - x, y: the point of intersection
+--- - xn, yn: the normal vector at the point of intersection
+--- - fraction: the fraction along the ray where the intersection occurred (0 to 1)
+---@param x1 number
+---@param y1 number
+---@param x2 number
+---@param y2 number
+---@param callback fun(item: any, x: number, y: number, xn: number, yn: number, fraction: number):boolean
+function Physics:rayCast(x1, y1, x2, y2, callback)
+    self.world:rayCast(x1, y1, x2, y2, function(shape, x, y, xn, yn, fraction)
+        local body = shape:getBody()
+        local item = body:getUserData()
+        local continue = callback(item, x, y, xn, yn, fraction)
+        if continue == false then
+            return 0
+        end
+    end)
+end
+
+local drawColors = {
+    dynamic = Colors.CC29.brick,
+    static = Colors.CC29.storm_gray,
+    kinematic = Colors.CC29.azure,
+    opacity = 0.5,
+}
 
 function Physics:draw()
     for _, entity in pairs(self.entities) do
         local body = entity.body
-        for _, fixture in pairs(body:getFixtures()) do
-            local shape = fixture:getShape()
-            love.graphics.setColor(1, 0, 0, 0.5)
+        for _, shape in pairs(body:getShapes()) do
+            local color = drawColors[body:getType()] or Colors.White
+            color[4] = drawColors.opacity
+            love.graphics.setColor(color)
             if shape:typeOf("CircleShape") then
                 ---@cast shape love.physics.CircleShape
                 local x, y = body:getPosition()

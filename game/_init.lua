@@ -2,7 +2,9 @@
 local Game = {
     ---@type Physics
     physics = nil,
-    player = {}
+    grounded = false,
+    player = {},
+    wall = {},
 }
 
 Game.__index = Game
@@ -11,7 +13,16 @@ function Game.new()
     local self = setmetatable({}, Game)
     self.physics = Physics.new(0, 0)
     self.player = {}
-    self.physics:addRect(self.player, { type = "kinematic", category = 1 }, 10, 10)
+    self.wall = {}
+    self.physics:addRect(self.player, { type = "dynamic", category = 1 }, 10, 10)
+    -- self.physics:setCallback(self.player, function(other)
+    --     if other == self.wall then
+    --         self.grounded = true
+    --     end
+    -- end)
+
+    self.physics:addRect(self.wall, { type = "static", category = 2 }, 200, 5)
+    self.physics:setPosition(self.wall, 0, 70)
 
     return self
 end
@@ -25,6 +36,7 @@ end
 function Game:update(dt)
     local dir = Input:direction()
     local speed = dir * 200
+
     self.physics:setVelocity(self.player, speed.x, speed.y)
 
     self.physics:update(dt)
@@ -42,9 +54,9 @@ function Game:draw()
             color = Colors.White
         end
         love.graphics.setColor(color)
-        local x, y = self.physics:getPosition(self.player)
+        local x, y = self.physics:getPosition(self.player, true)
         Draw:sprite("player", x, y)
-    
+
         self.physics:draw()
     end)
 

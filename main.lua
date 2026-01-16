@@ -23,7 +23,7 @@ end
 
 function love.load()
     --- I do not want to see physics deprecation warnings
-    love.setDeprecationOutput(false)
+    -- love.setDeprecationOutput(false)
 
     love.joystick.loadGamepadMappings("assets/extra/mappings.txt")
 
@@ -49,6 +49,8 @@ function love.update(dt)
 
     manual_gc(1e-3, 64)
 end
+
+local lastTime = 0
 
 function love.draw()
     Draw:begin()
