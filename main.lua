@@ -22,6 +22,9 @@ function _G.switchScreen(newScreen)
 end
 
 function love.load()
+    --- I do not want to see physics deprecation warnings
+    love.setDeprecationOutput(false)
+
     love.joystick.loadGamepadMappings("assets/extra/mappings.txt")
 
     Log({ love.graphics.getRendererInfo() })

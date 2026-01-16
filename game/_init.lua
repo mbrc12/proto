@@ -1,12 +1,18 @@
 ---@class Game : Screen
 local Game = {
-    pos = Vec2.new()
+    ---@type Physics
+    physics = nil,
+    player = {}
 }
 
 Game.__index = Game
 
 function Game.new()
     local self = setmetatable({}, Game)
+    self.physics = Physics.new(0, 0)
+    self.player = {}
+    self.physics:addRect(self.player, { type = "kinematic", category = 1 }, 10, 10)
+
     return self
 end
 
@@ -18,7 +24,10 @@ end
 
 function Game:update(dt)
     local dir = Input:direction()
-    self.pos = self.pos + dir * 200 * dt
+    local speed = dir * 200
+    self.physics:setVelocity(self.player, speed.x, speed.y)
+
+    self.physics:update(dt)
 end
 
 function Game:draw()
@@ -33,7 +42,10 @@ function Game:draw()
             color = Colors.White
         end
         love.graphics.setColor(color)
-        Draw:sprite("bullet", self.pos.x, self.pos.y)
+        local x, y = self.physics:getPosition(self.player)
+        Draw:sprite("player", x, y)
+    
+        self.physics:draw()
     end)
 
     Draw:draw("ui", 2, function()

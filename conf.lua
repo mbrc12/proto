@@ -4,7 +4,7 @@ function love.conf(t)
     t.window.width = RENDER_WIDTH
     t.window.height = RENDER_HEIGHT
     t.window.fullscreen = FULLSCREEN
-    t.modules.physics = false
+    t.modules.physics = true
     t.modules.touch = false
     t.window.title = "Game"
     t.highdpi = false
