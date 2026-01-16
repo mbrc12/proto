@@ -2,6 +2,7 @@
 local Game = {
     pos = Vec2.new()
 }
+
 Game.__index = Game
 
 function Game.new()

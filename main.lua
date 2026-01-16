@@ -5,19 +5,19 @@ local manual_gc = require("deps.manual_gc")
 
 local Game = require("game._init")
 
-Registry = {
+Globals = {
     ---@type Screen
     screen = nil,
 }
 
 ---@param newScreen Screen
 function _G.switchScreen(newScreen)
-    if Registry.screen and Registry.screen.leave then
-        Registry.screen:leave()
+    if Globals.screen and Globals.screen.leave then
+        Globals.screen:leave()
     end
-    Registry.screen = newScreen
-    if Registry.screen.enter then
-        Registry.screen:enter()
+    Globals.screen = newScreen
+    if Globals.screen.enter then
+        Globals.screen:enter()
     end
 end
 
@@ -42,7 +42,7 @@ function love.update(dt)
     Input:update(dt)
     Mouse:update()
 
-    Registry.screen:update(dt)
+    Globals.screen:update(dt)
 
     manual_gc(1e-3, 64)
 end
@@ -50,7 +50,7 @@ end
 function love.draw()
     Draw:begin()
 
-    Registry.screen:draw()
+    Globals.screen:draw()
 
     Draw:finish()
 
@@ -73,5 +73,5 @@ function love.draw()
 end
 
 function love.quit()
-    Registry.screen:leave()
+    Globals.screen:leave()
 end
